@@ -1,3 +1,5 @@
+var Math_sqrt = Math.sqrt, Math_floor = Math.floor;
+
 function get_primes7(n) {
 	if (n < 2) { return []; }
 	if (n == 2) { return [2]; }
@@ -7,22 +9,22 @@ function get_primes7(n) {
 		s.push(i);
 	}
 
-	var mroot = Math.floor(Math.sqrt(n));
+	var mroot = Math_floor(Math_sqrt(n));
 	var half = s.length;
 	var i = 0;
 	var m = 3;
 
 	while (m <= mroot) {
 		if (s[i]) {
-			var j = Math.floor((m*m-3)/2);   // int div
+			var j = Math_floor((m*m-3)/2);   // int div
 			s[j] = 0;
 			while (j < half) {
 				s[j] = 0;
 				j += m;
 			}
 		}
-		i = i + 1;
-		m = 2*i + 3;
+		i = i + 1 | 0;
+		m = (i<<1) + 3 | 0;
 	}
 
 	// due to a bug in node.js 4.3, we need to declare and init on separate lines
@@ -30,7 +32,7 @@ function get_primes7(n) {
 	var res = [];
 	res.push(2);
 
-	for (var x = 0; x < s.length; x++) {
+	for (var x = 0; x < s.length; x=x+1|0) {
 		if (s[x]) {
 			res.push(s[x]);
 		}
@@ -38,10 +40,17 @@ function get_primes7(n) {
 	return res;
 }
 
-var startTime = Date.now();
-var periodTime = parseInt(process.env.RUN_TIME, 10) * 1000
+var Date_now = Date.now;
+var endTime = Date_now() + parseInt(process.env.RUN_TIME, 10) * 1000;
+var log = "";
 
-while ((Date.now() - startTime) < periodTime) {
-	var res = get_primes7(10000000);
-	console.log("Found " + res.length + " prime numbers.");
+while (1) {
+    var res = get_primes7(10000000);
+    if (Date_now() < endTime) {
+        log += "Found " + res.length + " prime numbers.\n";
+    } else {
+	log += "Found " + res.length + " prime numbers.";
+        break;
+    }
 }
+console.log( res );
